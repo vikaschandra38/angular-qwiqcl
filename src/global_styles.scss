@@ -1,0 +1,36 @@
+/* Add application styles & imports to this file! */
+/* Add application styles & imports to this file! */
+@import 'theme.scss';
+
+body {
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  height: 100%;
+}
+
+.mat-toolbar.mat-primary,
+.mat-mdc-raised-button:not(:disabled) {
+  background-color: rgb(2, 120, 171) !important;
+}
+
+.mat-mdc-form-field {
+  height: 48px !important; /* set the desired height */
+}
+
+.mat-mdc-form-field-appearance-fill .mat-mdc-form-field-flex,
+.mat-mdc-form-field-appearance-fill .mat-mdc-form-field-infix {
+  height: 48px !important; /* adjust the height of the fill and infix */
+}
+
+.mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined)
+  .mat-mdc-form-field-infix {
+  padding-top: 22px !important;
+  padding-bottom: 0px !important;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  font-size: small !important;
+}
+
+// .dense-2 {
+//   @include mat-form-field-density(-2);
+// }

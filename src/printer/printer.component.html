@@ -1,0 +1,345 @@
+<div class="printer-container">
+  <mat-toolbar color="primary" class="mb-20"> PWP Installation </mat-toolbar>
+  <mat-card>
+    <mat-card-content class="flex mb-20">
+      <mat-form-field
+        subscriptSizing="dynamic"
+        appearance="fill"
+        floatLabel="always"
+      >
+        <mat-label>Select Printer Family</mat-label>
+        <mat-select [(ngModel)]="selectedPressFamily">
+          <mat-option
+            *ngFor="let pressFamiliy of pressFamilies"
+            [value]="pressFamiliy.id"
+          >
+            {{ pressFamiliy.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-radio-group [(ngModel)]="selectedRegion" class="px-20">
+        <mat-radio-button *ngFor="let region of regions" [value]="region">
+          {{ region }}
+        </mat-radio-button>
+      </mat-radio-group>
+      <button mat-raised-button color="primary" (click)="onShowTemplate()">
+        Get Template
+      </button>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <ng-container *ngIf="showTemplate">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Filter</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-grid-list cols="2" rowHeight="3:1">
+            <mat-grid-tile>
+              <mat-card style="width: 95%">
+                <mat-card-content>
+                  <div class="space-between">
+                    <mat-form-field
+                      subscriptSizing="dynamic"
+                      appearance="fill"
+                      floatLabel="always"
+                    >
+                      <mat-label>Select Milestone</mat-label>
+                      <mat-select
+                        [(ngModel)]="selectedMilestone"
+                        (selectionChange)="onMilestoneChange()"
+                      >
+                        <mat-option
+                          *ngFor="let milestone of milestones"
+                          [value]="milestone.id"
+                        >
+                          {{ milestone.name }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <div class="flex">
+                      <div style="font-size: xx-large">25</div>
+                      <div style="text-align: center">
+                        <div>%</div>
+                        <div>completed</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-20">
+                    <mat-progress-bar
+                      mode="determinate"
+                      value="25"
+                    ></mat-progress-bar>
+                  </div>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="resetSearchFilters()"
+                  >
+                    Reset
+                  </button>
+                </mat-card-content>
+              </mat-card>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-card style="width: 95%">
+                <mat-card-content>
+                  <div class="space-between">
+                    <mat-form-field
+                      subscriptSizing="dynamic"
+                      appearance="fill"
+                      floatLabel="always"
+                      class="ms-2"
+                    >
+                      <mat-label>Select Ribbon Status</mat-label>
+                      <mat-select [(ngModel)]="selectedRibbonStatus">
+                        <mat-option
+                          *ngFor="let ribbonStatus of ribbonStatuses"
+                          [value]="ribbonStatus.id"
+                        >
+                          {{ ribbonStatus.status }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <div class="flex">
+                      <div style="font-size: xx-large">65</div>
+                      <div style="text-align: center">
+                        <div>%</div>
+                        <div>completed</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="my-20">
+                    <mat-progress-bar
+                      mode="determinate"
+                      value="65"
+                    ></mat-progress-bar>
+                  </div>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="resetSearchFilters()"
+                  >
+                    Reset
+                  </button>
+                </mat-card-content>
+              </mat-card>
+            </mat-grid-tile>
+          </mat-grid-list>
+          <mat-divider></mat-divider>
+          <mat-accordion displayMode="default" multi="true">
+            <ng-container [formGroup]="printerTemplateForm">
+              <ng-container formArrayName="phases">
+                <mat-expansion-panel
+                  *ngFor="let phase of phases.controls; let i = index"
+                  [formGroupName]="i"
+                  [expanded]="defaultExpand"
+                  #phasePanel
+                  hideToggle
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="custom">
+                      <span>{{ phase.value.name }}</span>
+                      <mat-icon class="ms-2">{{
+                        phasePanel.expanded
+                          ? 'keyboard_arrow_down'
+                          : 'keyboard_arrow_right'
+                      }}</mat-icon>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+                  <ng-container
+                    formArrayName="activities"
+                    *ngIf="
+                      !!phase &&
+                      phase.controls.activities &&
+                      phase.controls.activities.length > 0
+                    "
+                  >
+                    <mat-expansion-panel
+                      [expanded]="defaultExpand"
+                      #activityPanel
+                      hideToggle
+                      [formGroupName]="j"
+                      *ngFor="
+                        let activity of phase.controls.activities.controls;
+                        let j = index
+                      "
+                    >
+                      <mat-expansion-panel-header>
+                        <mat-panel-title class="custom">
+                          <span>{{ activity.value.name }}</span>
+                          <mat-icon class="ms-2">{{
+                            activityPanel.expanded
+                              ? 'keyboard_arrow_down'
+                              : 'keyboard_arrow_right'
+                          }}</mat-icon>
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <ng-container
+                        formArrayName="states"
+                        *ngIf="
+                          !!activity &&
+                          activity.controls.states &&
+                          activity.controls.states.length > 0
+                        "
+                      >
+                        <ng-container
+                          [formGroupName]="k"
+                          *ngFor="
+                            let state of activity.controls.states.controls;
+                            let k = index
+                          "
+                        >
+                          <mat-card [formGroup]="state">
+                            <mat-card-content
+                              style="padding-top: 0; padding-bottom: 4px;"
+                            >
+                              <div class="space-between">
+                                <span>
+                                  <mat-checkbox
+                                    (change)="
+                                      enableState($event.checked, state)
+                                    "
+                                  ></mat-checkbox>
+                                  <ng-container
+                                    *ngIf="
+                                      state.value.id !== 0;
+                                      else inputField
+                                    "
+                                  >
+                                    {{ state.value.description }}
+                                  </ng-container>
+                                  <ng-template #inputField>
+                                    <mat-form-field
+                                      subscriptSizing="dynamic"
+                                      appearance="fill"
+                                      floatLabel="always"
+                                    >
+                                      <input
+                                        formControlName="description"
+                                        matInput
+                                        placeholder="Title"
+                                        (keydown.space)="
+                                          $event.stopPropagation()
+                                        "
+                                      />
+                                    </mat-form-field>
+                                  </ng-template>
+                                </span>
+                                <div class="steps">
+                                  <div class="milestone">
+                                    <mat-form-field
+                                      subscriptSizing="dynamic"
+                                      appearance="fill"
+                                      floatLabel="always"
+                                    >
+                                      <mat-label>Milestones</mat-label>
+                                      <mat-select
+                                        formControlName="milestone"
+                                        [compareWith]="compareMilestones"
+                                      >
+                                        <mat-option
+                                          *ngFor="let milestone of milestones"
+                                          [value]="milestone"
+                                        >
+                                          {{ milestone.name }}
+                                        </mat-option>
+                                      </mat-select>
+                                    </mat-form-field>
+                                  </div>
+                                  <div class="weightage">
+                                    <mat-form-field
+                                      subscriptSizing="dynamic"
+                                      appearance="fill"
+                                      floatLabel="always"
+                                    >
+                                      <mat-label>Weightage</mat-label>
+                                      <input
+                                        formControlName="milestone_weightage"
+                                        matInput
+                                        name="weightage"
+                                        required
+                                      />
+                                      <mat-icon matSuffix>percent</mat-icon>
+                                    </mat-form-field>
+                                  </div>
+                                  <div class="ribbon">
+                                    <mat-form-field
+                                      subscriptSizing="dynamic"
+                                      appearance="fill"
+                                      floatLabel="always"
+                                    >
+                                      <mat-label>Ribbon</mat-label>
+                                      <input
+                                        formControlName="ribbon_status_weightage"
+                                        matInput
+                                        name="ribbon"
+                                        required
+                                      />
+                                      <mat-icon matSuffix>percent</mat-icon>
+                                    </mat-form-field>
+                                  </div>
+                                  <div class="ribbon-status">
+                                    <mat-form-field
+                                      subscriptSizing="dynamic"
+                                      appearance="fill"
+                                      floatLabel="always"
+                                    >
+                                      <mat-label>Ribbon Status</mat-label>
+                                      <mat-select
+                                        formControlName="ribbon_status"
+                                        [compareWith]="compareRibbonStatuses"
+                                      >
+                                        <mat-option
+                                          *ngFor="
+                                            let ribbonStatus of ribbonStatuses
+                                          "
+                                          [value]="ribbonStatus"
+                                        >
+                                          {{ ribbonStatus.status }}
+                                        </mat-option>
+                                      </mat-select>
+                                    </mat-form-field>
+                                  </div>
+                                  <div class="day">
+                                    <mat-form-field
+                                      subscriptSizing="dynamic"
+                                      appearance="fill"
+                                      floatLabel="always"
+                                    >
+                                      <mat-label>Day</mat-label>
+                                      <input
+                                        formControlName="day"
+                                        matInput
+                                        type="number"
+                                        name="day"
+                                        required
+                                      />
+                                    </mat-form-field>
+                                  </div>
+                                </div>
+                              </div>
+                            </mat-card-content>
+                          </mat-card>
+                        </ng-container>
+                        <mat-action-row>
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            slot="start"
+                            (click)="onAddNewState(activity)"
+                          >
+                            Add
+                          </button>
+                        </mat-action-row>
+                      </ng-container>
+                    </mat-expansion-panel>
+                  </ng-container>
+                </mat-expansion-panel>
+              </ng-container>
+            </ng-container>
+          </mat-accordion>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </mat-card>
+</div>
